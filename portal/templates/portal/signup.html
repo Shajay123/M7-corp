@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        #signup-container {
+            margin-top: 20px;
+            text-align: center;
+            display: flex;
+            justify-content: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-5">
+        <div class="card">
+            <div class="card-header text-center">
+                <h2>Sign Up</h2>
+            </div>
+           
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="row mb-3">
+                        <div class="col">
+                            {{ form.username.label_tag }}
+                            {{ form.username }}
+                        </div>
+                        <div class="col">
+                            {{ form.email.label_tag }}
+                            {{ form.email }}
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col">
+                            {{ form.password.label_tag }}
+                            {{ form.password }}
+                        </div>
+                        <div class="col">
+                            {{ form.Phone_Number.label_tag }}
+                            {{ form.Phone_Number }}
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col">
+                            {{ form.Pan_Number.label_tag }}
+                            {{ form.Pan_Number }}
+                        </div>
+                        <div class="col">
+                            {{ form.Aadhar_Number.label_tag }}
+                            {{ form.Aadhar_Number }}
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col">
+                            {{ form.from_time.label_tag }}
+                            {{ form.from_time }}
+                        </div>
+                        <div class="col">
+                            {{ form.to_time.label_tag }}
+                            {{ form.to_time }}
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        
+                        <div class="col">
+                            {{ form.Address.label_tag }}
+                            {{ form.Address }}
+                        </div>
+                    </div>
+                    <div id="signup-container">
+                    <a class="btn btn-primary  style="width:20%" href="{% url 'signup_success' %}">Submit</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
