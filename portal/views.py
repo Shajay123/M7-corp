@@ -1,16 +1,45 @@
+import base64
 from django.http import JsonResponse
 from django.shortcuts import redirect, render
 from .models import TeamMember
 from django.contrib.auth.decorators import login_required
-from .models import LeaveRequest
+from .models import LeaveRequest,CheckInOut,User
 from .forms import SignUpForm
-
+from datetime import datetime
+from django.core.files.base import ContentFile
 
 
 def home(request):
     return render(request, 'portal/home.html')
 
 def camera(request):
+    if request.method == 'POST':
+        mobile = request.POST.get('mobile')
+        try:
+            user = User.objects.get(phone_number=mobile)
+        except User.DoesNotExist:
+            # If user doesn't exist, redirect to sign-up page
+            return redirect('signup')  # Assuming 'signup' is the URL name for sign-up page
+
+        # Save the check-in time
+        check_in_time = datetime.now()
+
+        # Save the captured image to a directory based on the username with the current date
+        username = user.username
+        date_str = check_in_time.strftime('%Y-%m-%d')
+        
+        # Decode the base64 image data
+        image_data_url = request.POST.get('image')
+        format, imgstr = image_data_url.split(';base64,')
+        ext = format.split('/')[-1]
+        image_data = ContentFile(base64.b64decode(imgstr), name=f'{username}_{date_str}.{ext}')
+
+        # Save to CheckInOut model
+        check_in_out = CheckInOut.objects.create(user=user, phone_number=mobile, check_in_time=check_in_time, image=image_data)
+
+        # Redirect to some success page or do further processing
+        return redirect('signup_success')  # Redirect to success page
+
     return render(request, 'portal/camera.html')
 
 

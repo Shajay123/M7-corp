@@ -38,6 +38,22 @@ class User(models.Model):
     Address = models.CharField(max_length=100)
     Pan_Number = models.CharField(max_length=100)
     Aadhar_Number = models.CharField(max_length=100)
-    Phone_Number = models.CharField(max_length=100)
+    phone_number = models.CharField(max_length=100)
     from_time = models.TimeField(null=True, blank=True)
     to_time = models.TimeField(null=True, blank=True)
+    
+
+class CheckInOut(models.Model):
+    id = models.BigAutoField(primary_key=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    phone_number = models.CharField(max_length=100)
+    check_in_time = models.DateTimeField(auto_now_add=True)
+    check_out_time = models.DateTimeField(null=True, blank=True)
+    image = models.ImageField(upload_to='checkinout_images/', null=True, blank=True)
+
+    def get_username_from_phone_number(self):
+        try:
+            user = User.objects.get(phone_number=self.phone_number)
+            return user.username
+        except User.DoesNotExist:
+            return None

@@ -161,12 +161,12 @@
         <div>Sat</div>
     </div>
     <div id="calendar" class="calendar mt-4">
-        <span class="badge badge-pill badge-primary">Leave</span>
-        <span class="badge badge-pill badge-secondary">Permission</span>
-        <span class="badge badge-pill badge-success">Half-Day Leave</span>
-        <span class="badge badge-pill badge-danger">Late Check-in</span>
-        <span class="badge badge-pill badge-warning">Force Check-out</span>
-    </div>
+    <div class="leave-container mt-4"></div>
+    <div class="permission-container mt-4"></div>
+    <div class="half-day-leave-container mt-4"></div>
+    <div class="late-checkin-container mt-4"></div>
+    <div class="force-checkout-container mt-4"></div>
+</div>
 </div>
 </div>
 
@@ -174,7 +174,7 @@
     const calendarContainer = document.querySelector('.calendar');
     const monthYearElement = document.querySelector('#monthYear'); // Ensure this element exists in your HTML
 
-    let currentMonth = 2; // March is the 3rd month (0-based indexing)
+    let currentMonth = 3; // March is the 3rd month (0-based indexing)
     let currentYear = 2024;
 
     function renderCalendar() {
@@ -242,41 +242,22 @@
 
     function updateGrid(data) {
         // Extract common properties
-        const { leave_type, description, start_date, end_date, start_time, end_time } = data;
+        const { leave_type, description, start_date, end_date } = data;
     
-        // Find the day element corresponding to the start date
-        const startDayElement = document.querySelector(`.day[data-date="${start_date}"]`);
+        // Create a leave request element
+        const leaveRequestElement = document.createElement('div');
+        leaveRequestElement.classList.add('leave-request');
+        leaveRequestElement.innerHTML = `${description} <span class="badge badge-pill badge-${getTypeBadgeColor(leave_type)}">${leave_type}</span>`;
     
-        if (startDayElement) {
-            // Create a leave request element
-            const leaveRequestElement = document.createElement('div');
-            leaveRequestElement.classList.add('leave-request');
-            leaveRequestElement.innerHTML = `${description} <span class="badge badge-pill badge-${getTypeBadgeColor(leave_type)}">${leave_type}</span>`;
+        // Modify start_date to be a valid selector
+        const modifiedStartDate = start_date.replace(/-/g, '_');
     
-            // If it's a full-day leave or half-day leave, add the leave request to the start day element
-            if (end_date) {
-                // Find the day element corresponding to the end date
-                const endDayElement = document.querySelector(`.day[data-date="${end_date}"]`);
-    
-                if (endDayElement) {
-                    // Add the leave request to each day element between start and end dates
-                    let currentDayElement = startDayElement;
-                    while (currentDayElement && currentDayElement !== endDayElement.nextSibling) {
-                        currentDayElement.appendChild(leaveRequestElement.cloneNode(true));
-                        currentDayElement = currentDayElement.nextSibling;
-                    }
-                } else {
-                    console.error('End day element not found for the specified end date:', end_date);
-                }
-            } else {
-                // Just add the leave request to the start day element
-                startDayElement.appendChild(leaveRequestElement);
-            }
-        } else {
-            console.error('Start day element not found for the specified start date:', start_date);
+        // Append the leave request element to the corresponding container based on date
+        const container = document.querySelector(`#${modifiedStartDate}`);
+        if (container) {
+            container.appendChild(leaveRequestElement);
         }
     }
-    
     
     function getTypeBadgeColor(leave_type) {
         switch (leave_type) {
