@@ -54,3 +54,4 @@ class CheckInOutAdmin(admin.ModelAdmin):
     image_tag.short_description = 'Image'
 
     fields = ('get_username', 'phone_number', 'check_in_time', 'check_out_time', 'image', 'image_tag')
+

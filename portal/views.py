@@ -111,12 +111,30 @@ def attendance(request):
     return render(request, 'portal/attendance.html', context)
 
 def get_leave_requests(request):
-    leave_requests = LeaveRequest.objects.all().values('start_date', 'end_date', 'description','leave_type')
-    leave_requests_list = list(leave_requests)
-    return JsonResponse(list(leave_requests_list), safe=False)
+    # Parse selected date from request
+    selected_date = request.POST.get('selected-date')
 
-def salary(request):
-    return render(request, 'portal/salary.html')
+    # Query leave requests for the selected date
+    leave_requests = LeaveRequest.objects.filter(start_date=selected_date).values('leave_type')
+
+    # Return leave requests as JSON response
+    return JsonResponse(list(leave_requests), safe=False)
+
+def get_checkin_data(request):
+    # Parse year and month from request
+    year = int(request.GET.get('year'))
+    month = int(request.GET.get('month'))
+
+    # Query check-in data for the specified year and month
+    checkin_data = CheckInOut.objects.filter(
+        check_in_time__year=year,
+        check_in_time__month=month
+    ).values('check_in_time__day')
+
+    # Return check-in data as JSON response
+    return JsonResponse(list(checkin_data), safe=False)
+
+
 
 def team(request):
     team_members = TeamMember.objects.all()

@@ -57,3 +57,10 @@ class CheckInOut(models.Model):
             return user.username
         except User.DoesNotExist:
             return None
+    
+    @classmethod
+    def get_checkin_data(cls, year, month):
+        return cls.objects.filter(
+            check_in_time__year=year,
+            check_in_time__month=month
+        ).values('check_in_time__day', 'check_in_time__time')
