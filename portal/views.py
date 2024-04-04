@@ -3,14 +3,22 @@ from django.http import JsonResponse
 from django.shortcuts import redirect, render
 from .models import TeamMember
 from django.contrib.auth.decorators import login_required
-from .models import LeaveRequest,CheckInOut,User
+from .models import LeaveRequest,CheckInOut,User,Hero, Feature, Service
 from .forms import SignUpForm
 from datetime import datetime
 from django.core.files.base import ContentFile
 
 
 def home(request):
-    return render(request, 'portal/home.html')
+    hero = Hero.objects.first()  # Assuming you only have one Hero instance
+    features = Feature.objects.all()
+    services = Service.objects.all()
+    context = {
+        'hero': hero,
+        'features': features,
+        'services': services,
+    }
+    return render(request, 'portal/home.html', context)
 
 def camera(request):
     if request.method == 'POST':

@@ -64,3 +64,23 @@ class CheckInOut(models.Model):
             check_in_time__year=year,
             check_in_time__month=month
         ).values('check_in_time__day', 'check_in_time__time')
+    
+
+
+class Hero(models.Model):
+    id = models.BigAutoField(primary_key=True)
+    title = models.CharField(max_length=100)
+    description = models.TextField()
+    image = models.ImageField(upload_to='hero_images')
+
+class Feature(models.Model):
+    id = models.BigAutoField(primary_key=True)
+    title = models.CharField(max_length=100)
+    description = models.TextField()
+    image = models.ImageField(upload_to='feature_images')
+
+class Service(models.Model):
+    id = models.BigAutoField(primary_key=True)
+    title = models.CharField(max_length=100)
+    description = models.TextField()
+    image = models.ImageField(upload_to='service_images')

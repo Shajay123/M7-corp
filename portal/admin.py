@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import LeaveRequest,TeamMember,User,CheckInOut
+from .models import LeaveRequest,TeamMember,User,CheckInOut,Hero, Feature, Service
 
 
 @admin.register(TeamMember)
@@ -55,3 +55,15 @@ class CheckInOutAdmin(admin.ModelAdmin):
 
     fields = ('get_username', 'phone_number', 'check_in_time', 'check_out_time', 'image', 'image_tag')
 
+
+@admin.register(Hero)
+class HeroAdmin(admin.ModelAdmin):
+    list_display = ('title', 'description')  # Customize the display fields as needed
+
+@admin.register(Feature)
+class FeatureAdmin(admin.ModelAdmin):
+    list_display = ('title', 'description')  # Customize the display fields as needed
+
+@admin.register(Service)
+class ServiceAdmin(admin.ModelAdmin):
+    list_display = ('title', 'description')  # Customize the display fields as needed
