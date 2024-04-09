@@ -1,9 +1,10 @@
 import base64
+from django.db.models import Count
 from django.http import JsonResponse
 from django.shortcuts import redirect, render
 from .models import TeamMember
 from django.contrib.auth.decorators import login_required
-from .models import LeaveRequest,CheckInOut,User,Hero, Feature, Service
+from .models import LeaveRequest,CheckInOut,User,Hero,Feature,Service
 from .forms import SignUpForm
 from datetime import datetime
 from django.core.files.base import ContentFile
@@ -99,7 +100,8 @@ def Approvals(request):
                 description=description,
             )
         
-        return JsonResponse({'success': True,'leave_type': leave_type})  # Return JSON response upon successful submission
+        # Render the success HTML page upon successful submission
+        return render(request, 'portal/success.html', {'leave_type': leave_type})
     else:
         # Handle GET request or render the initial form page
         return render(request, 'portal/approvals.html')
@@ -122,10 +124,12 @@ def get_leave_requests(request):
     # Parse selected date from request
     selected_date = request.POST.get('selected-date')
 
-    # Query leave requests for the selected date
-    leave_requests = LeaveRequest.objects.filter(start_date=selected_date).values('leave_type')
+    # Query leave requests for the selected date and count the occurrences of each leave type
+    leave_requests = LeaveRequest.objects.filter(start_date=selected_date) \
+        .values('leave_type') \
+        .annotate(day=Count('start_date'))
 
-    # Return leave requests as JSON response
+    # Return leave requests with day information as JSON response
     return JsonResponse(list(leave_requests), safe=False)
 
 def get_checkin_data(request):
@@ -163,5 +167,7 @@ def signup(request):
 def signup_success(request):
     return render(request, 'portal/signup_success.html')
 
+def success(request):
+    return render(request, 'portal/success.html')
 
 

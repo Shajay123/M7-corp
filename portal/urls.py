@@ -2,7 +2,7 @@ from django.urls import path
 
 from django.conf.urls.static import static
 from . import views
-from django.conf import settings  # Assuming your views are in the same directory
+from django.conf import settings
 
 urlpatterns = [
     path('', views.home, name='home'),
@@ -14,6 +14,7 @@ urlpatterns = [
     path('get_checkin_data/',views.get_checkin_data, name='get_checkin_data'),
     path('get_leave_requests/', views.get_leave_requests, name='get_leave_requests'),
     path('signup_success/',views.signup_success, name='signup_success'),
+    path('success/',views.success, name='success'),
 ]
 
 
