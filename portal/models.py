@@ -13,23 +13,6 @@ class TeamMember(models.Model):
         return self.name
 
 
-class LeaveRequest(models.Model):
-
-    id = models.BigAutoField(primary_key=True) 
-    
-    leave_type = models.CharField(max_length=100)
-    start_date = models.DateField()
-    end_date = models.DateField(null=True, blank=True)  # Allow end_date to be null for certain leave types
-    start_time = models.TimeField(null=True, blank=True)  # For Permission leave type
-    end_time = models.TimeField(null=True, blank=True)  # For Permission leave type
-    description = models.TextField()
-
-    def __str__(self):
-        if self.leave_type == 'Permission':
-            return f'{self.leave_type} - {self.start_date} {self.start_time} to {self.end_date} {self.end_time}'
-        else:
-            return f'{self.leave_type} - {self.start_date}'
-        
 class User(models.Model):
     id = models.BigAutoField(primary_key=True)
     username = models.CharField(max_length=100)
@@ -59,11 +42,12 @@ class CheckInOut(models.Model):
             return None
     
     @classmethod
-    def get_checkin_data(cls, year, month):
-        return cls.objects.filter(
-            check_in_time__year=year,
-            check_in_time__month=month
-        ).values('check_in_time__day', 'check_in_time__time')
+    def get_username_from_phone_number(self):
+        try:
+            user = User.objects.get(phone_number=self.phone_number)
+            return user.username
+        except User.DoesNotExist:
+            return "Unknown User"
     
 
 
@@ -84,3 +68,14 @@ class Service(models.Model):
     title = models.CharField(max_length=100)
     description = models.TextField()
     image = models.ImageField(upload_to='service_images')
+
+
+
+class Events(models.Model):
+    id = models.AutoField(primary_key=True)
+    name = models.CharField(max_length=255, null=True, blank=True)
+    start = models.DateTimeField(null=True, blank=True)
+    end = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        db_table = "tbevents"

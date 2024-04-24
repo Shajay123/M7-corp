@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import LeaveRequest,TeamMember,User,CheckInOut,Hero, Feature, Service
+from .models import TeamMember,User,CheckInOut,Hero, Feature, Service
 
 
 @admin.register(TeamMember)
@@ -13,17 +13,6 @@ class TeamMemberAdmin(admin.ModelAdmin):
     display_image.short_description = 'Image'
 
 
-@admin.register(LeaveRequest)
-class LeaveRequestAdmin(admin.ModelAdmin):
-    list_display = ('leave_type', 'start_date', 'end_date', 'start_time', 'end_time', 'description')
-    list_filter = ('leave_type', 'start_date', 'end_date')
-    search_fields = ('leave_type', 'description')
-
-    def get_queryset(self, request):
-        queryset = super().get_queryset(request)
-        if not request.user.is_superuser:
-            queryset = queryset.filter(user=request.user)
-        return queryset
     
     
 class UserAdmin(admin.ModelAdmin):
@@ -67,3 +56,12 @@ class FeatureAdmin(admin.ModelAdmin):
 @admin.register(Service)
 class ServiceAdmin(admin.ModelAdmin):
     list_display = ('title', 'description')  # Customize the display fields as needed
+
+
+from .models import Events 
+
+@admin.register(Events)
+class EventsAdmin(admin.ModelAdmin):
+    list_display = ('name', 'start', 'end')
+    search_fields = ('name',)
+    list_filter = ('start', 'end')

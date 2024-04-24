@@ -23,11 +23,31 @@
         <a class="mr-5 hover:text-gray-900" href="{% url 'attendance' %}" >ATTENDANCE</a>
         <a class="mr-5 hover:text-gray-900" href="{% url 'team' %}" >TEAM</a>
       </nav>
-      <button class="inline-flex items-center bg-gray-100 border-0 py-1 px-3 focus:outline-none hover:bg-gray-200 rounded text-base mt-4 md:mt-0">Button
-        <svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="w-4 h-4 ml-1" viewBox="0 0 24 24">
-          <path d="M5 12h14M12 5l7 7-7 7"></path>
-        </svg>
-      </button>
+      <div class="relative inline-block text-left">
+
+        
+
+        <button class="inline-flex items-center bg-gray-100 border-0 py-1 px-3 focus:outline-none hover:bg-gray-200 rounded text-base mt-4 md:mt-0" id="dropdownButton">
+            {% if request.session.username %}
+                {{ request.session.username }}
+            {% else %}
+                Login
+            {% endif %}
+            <svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="w-4 h-4 ml-1" viewBox="0 0 24 24">
+                
+            </svg>
+        </button>
+        <div class="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 hidden" id="dropdownMenu">
+            <div class="py-1" role="menu" aria-orientation="vertical" aria-labelledby="dropdownButton">
+                {% if request.session.username %}
+                    <a href="{% url 'login' %}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900" role="menuitem">Logout</a>
+                {% else %}
+                    <a href="{% url 'login' %}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900" role="menuitem">Login</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
     </div>
   </header><!-- End Header -->
 
@@ -164,6 +184,23 @@
   </footer><!-- End Footer -->
 
 
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const dropdownButton = document.getElementById('dropdownButton');
+    const dropdownMenu = document.getElementById('dropdownMenu');
+
+    dropdownButton.addEventListener('click', function () {
+        dropdownMenu.classList.toggle('hidden');
+    });
+
+    document.addEventListener('click', function (event) {
+        if (!dropdownButton.contains(event.target) && !dropdownMenu.contains(event.target)) {
+            dropdownMenu.classList.add('hidden');
+        }
+    });
+});
+
+</script>
 
 
 </body>

@@ -26,10 +26,11 @@ SECRET_KEY = '8yq#a-u#6k^e2jw-gd@3dvd&$u)g=!3p7$fd4t8+m$3mak+8xs'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["2cd5-115-97-253-131.ngrok-free.app","127.0.0.1"]
+ALLOWED_HOSTS = ["7591-27-4-122-157.ngrok-free.app","127.0.0.1"]
 
-
-# Application definition
+CSRF_TRUSTED_ORIGINS = [
+    "https://7591-27-4-122-157.ngrok-free.app",
+]
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -38,10 +39,16 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'portal',
+    'portal', 
+    
 ]
 
+
+
+
+
 MIDDLEWARE = [
+    
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
