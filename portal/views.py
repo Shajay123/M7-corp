@@ -1,6 +1,6 @@
 import base64
 from django.db.models import Count
-from django.http import JsonResponse
+from django.http import HttpResponseBadRequest, JsonResponse
 from django.shortcuts import redirect, render
 from .models import TeamMember
 from django.contrib.auth.decorators import login_required
@@ -29,41 +29,38 @@ def home(request):
 def camera(request):
     if request.method == 'POST':
         mobile = request.POST.get('mobile')
+        
         try:
             user = User.objects.get(phone_number=mobile)
         except User.DoesNotExist:
-            # If user doesn't exist, redirect to sign-up page
-            return redirect('signup')  # Assuming 'signup' is the URL name for sign-up page
-
-        # Save the check-in time
+            return redirect('signup')
+        
         check_in_time = datetime.now()
-
-        # Save the captured image to a directory based on the username with the current date
-        username = user.username
+        current_time = datetime.now().strftime('%H%M%S')
+        
         date_str = check_in_time.strftime('%Y-%m-%d')
         
-        # Decode the base64 image data
         image_data_url = request.POST.get('image')
-        format, imgstr = image_data_url.split(';base64,')
-        ext = format.split('/')[-1]
-        image_data = ContentFile(base64.b64decode(imgstr), name=f'{username}_{date_str}.{ext}')
+        
+        try:
+            format, imgstr = image_data_url.split(';base64,')
+            ext = format.split('/')[-1]
+            image_data = ContentFile(base64.b64decode(imgstr), name=f'{user.username}_{date_str}_{current_time}.{ext}')
+        except Exception as e:
+            print(f"Error decoding image: {e}")
+            return HttpResponseBadRequest("Invalid image data")
 
-        # Save to CheckInOut model
-        check_in_out = CheckInOut.objects.create(user=user, phone_number=mobile, check_in_time=check_in_time, image=image_data)
-
-        # Redirect to some success page or do further processing
-        return redirect('signup_success')  # Redirect to success page
+        CheckInOut.objects.create(user=user, phone_number=mobile, check_in_time=check_in_time, image=image_data)
+        
+        return redirect('signup_success')
 
     return render(request, 'portal/camera.html')
-
 
 
 @login_required
 def attendance(request):
     username = request.user.username
-    context = {
-        'username': username,
-    }
+    context = {'username': username}
     return render(request, 'portal/attendance.html', context)
 
 
@@ -72,7 +69,7 @@ def get_checkin_data(request):
     checkin_data = CheckInOut.objects.all()
 
     events = [{
-        'title': f"Check-in - {data.get_username_from_phone_number()}",
+        'title': f"Check-in",
         'start': data.check_in_time.strftime('%Y-%m-%dT%H:%M:%S'),
         'end': data.check_out_time.strftime('%Y-%m-%dT%H:%M:%S') if data.check_out_time else None,
         'allDay': False
@@ -102,9 +99,6 @@ def signup(request):
 def signup_success(request):
     return render(request, 'portal/signup_success.html')
 
-def success(request):
-    return render(request, 'portal/success.html')
-
 
 
 
@@ -113,11 +107,12 @@ def add_event(request):
         form = EventsForm(request.POST)
         if form.is_valid():
             form.save()
-            return redirect('all_events')  # Assuming you have a view named 'all_events'
+            return redirect('attendance')  # Assuming you have a view named 'all_events'
     else:
         form = EventsForm()
     
     return render(request, 'portal/add_event.html', {'form': form})
+
 
 
 def all_events(request):
@@ -125,8 +120,8 @@ def all_events(request):
     events_list = []
 
     for event in all_events:
-        start = event.start.strftime("%Y-%m-%d %H:%M:%S") if event.start else None
-        end = event.end.strftime("%Y-%m-%d %H:%M:%S") if event.end else None
+        start = event.start.strftime("%Y-%m-%d") if event.start else None
+        end = event.end.strftime("%Y-%m-%d") if event.end else None
 
         if not start or not end:
             continue

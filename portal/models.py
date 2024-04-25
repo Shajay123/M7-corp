@@ -1,6 +1,7 @@
 
 from django.db import models
 
+from datetime import datetime, time
 
 class TeamMember(models.Model):
     id = models.BigAutoField(primary_key=True)
@@ -71,11 +72,19 @@ class Service(models.Model):
 
 
 
+
 class Events(models.Model):
     id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=255, null=True, blank=True)
-    start = models.DateTimeField(null=True, blank=True)
-    end = models.DateTimeField(null=True, blank=True)
+    start = models.DateField(null=True, blank=True)
+    end = models.DateField(null=True, blank=True)
 
     class Meta:
         db_table = "tbevents"
+
+    def save(self, *args, **kwargs):
+        if self.start:
+            self.start = datetime.combine(self.start, datetime.min.time())
+        if self.end:
+            self.end = datetime.combine(self.end, datetime.max.time())
+        super(Events, self).save(*args, **kwargs)

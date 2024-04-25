@@ -31,12 +31,12 @@ class EventsForm(forms.ModelForm):
         ('force checkout', 'Force Checkout'),
     )
 
-    name = forms.ChoiceField(choices=EVENT_CHOICES)
+    name = forms.ChoiceField(choices=EVENT_CHOICES, required=True)
 
     class Meta:
         model = Events
         fields = ['name', 'start', 'end']
         widgets = {
-            'start': forms.DateInput(attrs={'type': 'date'}),
-            'end': forms.DateInput(attrs={'type': 'date'}),
+            'start': forms.DateInput(attrs={'type': 'date', 'required': 'required'}),
+            'end': forms.DateInput(attrs={'type': 'date', 'required': 'required'}),
         }
