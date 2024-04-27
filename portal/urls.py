@@ -19,6 +19,7 @@ urlpatterns = [
     path('login/', views.login_view, name='login'),
     path('logout/', views.logout_view, name='logout'),
     path('login_sucess/', views.login_sucess, name='login_sucess'),
+    path('send_email/',views.sendEmail, name="send_email"),
 ]
 
 

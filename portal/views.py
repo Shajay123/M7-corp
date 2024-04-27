@@ -11,8 +11,11 @@ from django.core.files.base import ContentFile
 from django.http import JsonResponse 
 from.models import Events
 from django.contrib import messages
-from django.contrib.auth import logout as django_logout
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login,logout
+from django.template.loader import render_to_string
+from django.core.mail import EmailMessage
+from django.conf import settings
+
 
 def home(request):
     hero = Hero.objects.first()  # Assuming you only have one Hero instance
@@ -87,12 +90,15 @@ def team(request):
 
 def signup(request):
     if request.method == 'POST':
-        form = SignUpForm(request.POST)
-        if form.is_valid():
-            form.save()
-            return redirect('signup_success')  # Redirect to success page
+        
+        form = SignUpForm(request.POST)  
+        if form.is_valid():  
+            form.save() 
+            return redirect('signup_success')  
     else:
-        form = SignUpForm()
+        
+        form = SignUpForm()  
+    
     return render(request, 'portal/signup.html', {'form': form})
 
 
@@ -157,27 +163,26 @@ def remove(request):
 
 
 
+
 def login_view(request):
     if request.method == 'POST':
         username = request.POST.get('username')
         password = request.POST.get('password')
-        email = request.POST.get('email')
 
-        user = authenticate(request, username=username, password=password,email=email)
+        user = authenticate(request, username=username, password=password)
         
         if user is not None:
             login(request, user)
             request.session['username'] = username  # Store the username in session
-            return redirect('login_sucess')  
+            return redirect('home')  # Redirect to the dashboard or home page
             
-    
     return render(request, 'portal/login.html')
 
 
 
 @login_required
 def logout_view(request):
-    django_logout(request)
+    logout(request)
     messages.success(request, 'You have been logged out successfully!')
     return redirect('login')
 
@@ -187,3 +192,28 @@ def login_sucess(request):
     return render(request, 'portal/login_sucess.html')
 
 
+
+
+def sendEmail(request):
+    if request.method == 'POST':
+        # You might want to validate the form data using Django forms here.
+
+        name = request.POST.get('name', '')
+        email = request.POST.get('email', '')
+        message = request.POST.get('message', '')
+
+        template = render_to_string('portal/email_template.html', {'name': name, 'email': email, 'message': message})
+
+        subject = request.POST.get('subject', 'Default Subject')  # Provide a default subject if not present
+
+        email = EmailMessage(
+            subject,
+            template,
+            settings.EMAIL_HOST_USER,
+            ['shajaygopi2001@gmail.com']
+        )
+
+        email.fail_silently = False
+        email.send()
+
+        return render(request,'portal/email_sent.html')
