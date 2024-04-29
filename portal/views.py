@@ -28,43 +28,51 @@ def home(request):
     }
     return render(request, 'portal/home.html', context)
 
-@login_required
+
 def camera(request):
-    if request.method == 'POST':
-        mobile = request.POST.get('mobile')
-        
-        try:
-            user = User.objects.get(phone_number=mobile)
-        except User.DoesNotExist:
-            return redirect('signup')
-        
-        check_in_time = datetime.now()
-        current_time = datetime.now().strftime('%H%M%S')
-        
-        date_str = check_in_time.strftime('%Y-%m-%d')
-        
-        image_data_url = request.POST.get('image')
-        
-        try:
-            format, imgstr = image_data_url.split(';base64,')
-            ext = format.split('/')[-1]
-            image_data = ContentFile(base64.b64decode(imgstr), name=f'{user.username}_{date_str}_{current_time}.{ext}')
-        except Exception as e:
-            print(f"Error decoding image: {e}")
-            return HttpResponseBadRequest("Invalid image data")
+    if request.user.is_authenticated:
+        if request.method == 'POST':
+            mobile = request.POST.get('mobile')
+            
+            try:
+                user = User.objects.get(phone_number=mobile)
+            except User.DoesNotExist:
+                return redirect('signup')
+            
+            check_in_time = datetime.now()
+            current_time = datetime.now().strftime('%H%M%S')
+            
+            date_str = check_in_time.strftime('%Y-%m-%d')
+            
+            image_data_url = request.POST.get('image')
+            
+            try:
+                format, imgstr = image_data_url.split(';base64,')
+                ext = format.split('/')[-1]
+                image_data = ContentFile(base64.b64decode(imgstr), name=f'{user.username}_{date_str}_{current_time}.{ext}')
+            except Exception as e:
+                print(f"Error decoding image: {e}")
+                return HttpResponseBadRequest("Invalid image data")
 
-        CheckInOut.objects.create(user=user, phone_number=mobile, check_in_time=check_in_time, image=image_data)
-        
-        return redirect('signup_success')
+            CheckInOut.objects.create(user=user, phone_number=mobile, check_in_time=check_in_time, image=image_data)
+            
+            return redirect('signup_success')
 
-    return render(request, 'portal/camera.html')
+        return render(request, 'portal/camera.html')
+    
+    else:
+        return redirect('login')
 
 
-@login_required
+
+
 def attendance(request):
-    username = request.user.username
-    context = {'username': username}
-    return render(request, 'portal/attendance.html', context)
+    if request.user.is_authenticated:
+        username = request.user.username
+        context = {'username': username}
+        return render(request, 'portal/attendance.html', context)
+    else:
+        return redirect('login')
 
 
 
@@ -82,11 +90,13 @@ def get_checkin_data(request):
 
 
 
-@login_required
-def team(request):
-    team_members = TeamMember.objects.all()
-    return render(request, 'portal/team.html', {'team_members': team_members})
 
+def team(request):
+    if request.user.is_authenticated:
+        team_members = TeamMember.objects.all()
+        return render(request, 'portal/team.html', {'team_members': team_members})
+    else:
+        return redirect('login')
 
 def signup(request):
     if request.method == 'POST':
