@@ -26,7 +26,7 @@ SECRET_KEY = '8yq#a-u#6k^e2jw-gd@3dvd&$u)g=!3p7$fd4t8+m$3mak+8xs'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["d1b4-27-4-122-157.ngrok-free.app","127.0.0.1"]
+ALLOWED_HOSTS = ["d1b4-27-4-122-157.ngrok-free.app","127.0.0.1","https://shajay123.github.io/M7-corp/","*"]
 
 CSRF_TRUSTED_ORIGINS = [
     "https://d1b4-27-4-122-157.ngrok-free.app",
